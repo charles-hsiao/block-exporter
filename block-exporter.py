@@ -33,17 +33,6 @@ def geth_json_rpc(geth_host, geth_port, method, params):
     else:
         res_dict = r.json()
         return(res_dict['result'])
-    # mock response now
-    #if method == "net_listening":
-    #    r = True
-    #elif method == "eth_blockNumber":
-    #    r = '0x67c'
-    #elif method == "net_peerCount":
-    #    r = '0x6'
-    #elif method == "txpool_status":
-    #    r = {u'queued': u'0x14', u'pending': u'0x0'}
-
-    return(r)
 
 def geth_collect_metrics():
     net_listening = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "net_listening", [])
