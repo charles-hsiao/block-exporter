@@ -38,6 +38,8 @@ def geth_collect_metrics():
     net_listening = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "net_listening", [])
     if net_listening != -1:
         geth_net_listening.set(int(net_listening))
+    else:
+        geth_net_listening.set(0)
 
     latest_block = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "eth_blockNumber", [])
     if latest_block != -1:
@@ -46,6 +48,8 @@ def geth_collect_metrics():
     net_peerCount = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "net_peerCount", [])
     if net_peerCount != -1:
         geth_net_peer_count.set(int(net_peerCount, 16))
+    else:
+        geth_net_peer_count.set(0)
 
     txpool_status = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "txpool_status", [])
     if txpool_status != -1:
@@ -54,6 +58,9 @@ def geth_collect_metrics():
         txpool_status_pending = int(txpool_status['pending'], 16)
         geth_txpool_status_queued.set(txpool_status_queued)
         geth_txpool_status_pending.set(txpool_status_pending)
+    else:
+        geth_txpool_status_queued.set(0)
+        geth_txpool_status_pending.set(0)
 
 if __name__ == '__main__':
     # Start up the server to expose the metrics
