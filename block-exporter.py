@@ -1,4 +1,4 @@
-from prometheus_client import start_http_server, Summary, Gauge, Counter
+from prometheus_client import start_http_server, Summary, Gauge
 import requests
 import json
 import time
@@ -8,7 +8,7 @@ CONFIG_GETH_PORT = 22000
 
 # prometheus metrics
 geth_net_listening = Gauge('geth_net_listening', 'Is geth syncing or not')
-geth_latest_block = Counter('geth_latest_block', 'Latest block number')
+geth_latest_block = Gauge('geth_latest_block', 'Latest block number')
 geth_net_peer_count = Gauge('geth_net_peer_count', 'Geth peers count')
 geth_txpool_status_queued = Gauge('geth_txpool_status_queued', '')
 geth_txpool_status_pending = Gauge('geth_txpool_status_pending', '')
@@ -46,7 +46,7 @@ def geth_collect_metrics():
     geth_net_listening.set(int(net_listening))
 
     latest_block = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "eth_blockNumber", [])
-    geth_latest_block.inc(int(latest_block, 16))
+    geth_latest_block.set(int(latest_block, 16))
 
     net_peerCount = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "net_peerCount", [])
     geth_net_peer_count.set(int(net_peerCount, 16))   
