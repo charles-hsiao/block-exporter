@@ -1,6 +1,7 @@
 from prometheus_client import start_http_server, Summary, Gauge, Counter
 import requests
 import json
+import time
 
 CONFIG_GETH_HOST = "127.0.0.1"
 CONFIG_GETH_PORT = 22000
@@ -61,4 +62,5 @@ if __name__ == '__main__':
     start_http_server(8000)
     #Refresh Block metrics
     while True:
-        geth_collect_metrics() 
+        geth_collect_metrics()
+        time.sleep(3) 
