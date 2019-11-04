@@ -26,36 +26,34 @@ def geth_json_rpc(geth_host, geth_port, method, params):
     }
 
     geth_url = "http://" + geth_host + ":" + str(geth_port)
-    r = requests.post(geth_url, data = json.dumps(body), headers=headers)
-    res_dict = r.json()
-    return(res_dict['result'])
-    # mock response now
-    #if method == "net_listening":
-    #    r = True
-    #elif method == "eth_blockNumber":
-    #    r = '0x67c'
-    #elif method == "net_peerCount":
-    #    r = '0x6'
-    #elif method == "txpool_status":
-    #    r = {u'queued': u'0x14', u'pending': u'0x0'}
-
-    return(r) 
+    try:
+        r = requests.post(geth_url, data = json.dumps(body), headers=headers)
+    except requests.ConnectionError as e:
+        return(-1)
+    else:
+        res_dict = r.json()
+        return(res_dict['result'])
 
 def geth_collect_metrics():
     net_listening = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "net_listening", [])
-    geth_net_listening.set(int(net_listening))
+    if net_listening != -1:
+        geth_net_listening.set(int(net_listening))
 
     latest_block = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "eth_blockNumber", [])
-    geth_latest_block.set(int(latest_block, 16))
+    if latest_block != -1:
+        geth_latest_block.set(int(latest_block, 16))
 
     net_peerCount = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "net_peerCount", [])
-    geth_net_peer_count.set(int(net_peerCount, 16))   
+    if net_peerCount != -1:
+        geth_net_peer_count.set(int(net_peerCount, 16))
 
     txpool_status = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "txpool_status", [])
-    txpool_status_queued = int(txpool_status['queued'], 16)
-    txpool_status_pending = int(txpool_status['pending'], 16)
-    geth_txpool_status_queued.set(txpool_status_queued)
-    geth_txpool_status_pending.set(txpool_status_pending)
+    if txpool_status != -1:
+        txpool_status_queued = int(txpool_status['queued'], 16)
+        geth_txpool_status_queued.set(txpool_status_queued)
+        txpool_status_pending = int(txpool_status['pending'], 16)
+        geth_txpool_status_queued.set(txpool_status_queued)
+        geth_txpool_status_pending.set(txpool_status_pending)
 
 if __name__ == '__main__':
     # Start up the server to expose the metrics
@@ -63,4 +61,4 @@ if __name__ == '__main__':
     #Refresh Block metrics
     while True:
         geth_collect_metrics()
-        time.sleep(3) 
+        time.sleep(1)
