@@ -40,7 +40,7 @@ def geth_json_rpc(geth_host, geth_port, method, params):
         return(res_dict['result'])
 
 def geth_collect_metrics(last_block_number):
-    # Weather the nodes is listen to other nodes or not 
+    # Weather the nodes is listen to other nodes or not
     net_listening = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "net_listening", [])
     if net_listening != -1:
         geth_net_listening.set(int(net_listening))
@@ -52,7 +52,7 @@ def geth_collect_metrics(last_block_number):
     if latest_block != -1:
         geth_latest_block.set(int(latest_block, 16))
 
-    # The connected peer count 
+    # The connected peer count
     net_peerCount = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "net_peerCount", [])
     if net_peerCount != -1:
         geth_net_peer_count.set(int(net_peerCount, 16))
@@ -74,17 +74,17 @@ def geth_collect_metrics(last_block_number):
     # Block transaction count sum
     global SUM_TRANSACTIONS
     if latest_block != -1:
-        if last_block_number < latest_block:
-            for i in range(last_block_number, latest_block):
-                block_inf = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "eth_getBlockByNumber", ['0x67c', True])
+        if last_block_number < int(latest_block, 16):
+            for i in range(last_block_number, int(latest_block, 16)):
+                block_inf = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "eth_getBlockByNumber", [latest_block, True])
                 if block_inf != -1:
                     block_transaction_count = len(block_inf['transactions'])
                     SUM_TRANSACTIONS += block_transaction_count
                     geth_transaction_processed.set(SUM_TRANSACTIONS)
 
-         
+
     r = {
-        "BlockNum": latest_block,
+        "BlockNum": int(latest_block, 16),
         "TXsSum": SUM_TRANSACTIONS
     }
 
