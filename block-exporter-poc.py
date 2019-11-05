@@ -31,7 +31,6 @@ def geth_collect_metrics(last_block_number):
 
 if __name__ == '__main__':
     LAST_BLOCK_COUNTER = 0
-    SUM_TRANSACTIONS = 0
 
     # Refresh Block metrics
     while True:
