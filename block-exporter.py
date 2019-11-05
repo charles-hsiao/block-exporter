@@ -50,7 +50,10 @@ def geth_collect_metrics(last_block_number):
     # The block height
     latest_block = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "eth_blockNumber", [])
     if latest_block != -1:
+        BlockNum = int(latest_block, 16)
         geth_latest_block.set(int(latest_block, 16))
+    else:
+        BlockNum = -1
 
     # The connected peer count
     net_peerCount = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "net_peerCount", [])
@@ -82,9 +85,8 @@ def geth_collect_metrics(last_block_number):
                     SUM_TRANSACTIONS += block_transaction_count
                     geth_transaction_processed.set(SUM_TRANSACTIONS)
 
-
     r = {
-        "BlockNum": int(latest_block, 16),
+        "BlockNum": BlockNum,
         "TXsSum": SUM_TRANSACTIONS
     }
 
