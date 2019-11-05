@@ -76,7 +76,7 @@ def geth_collect_metrics(last_block_number):
     if latest_block != -1:
         if last_block_number < int(latest_block, 16):
             for i in range(last_block_number, int(latest_block, 16)):
-                block_inf = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "eth_getBlockByNumber", [latest_block, True])
+                block_inf = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "eth_getBlockByNumber", [str(hex(i)), True])
                 if block_inf != -1:
                     block_transaction_count = len(block_inf['transactions'])
                     SUM_TRANSACTIONS += block_transaction_count
