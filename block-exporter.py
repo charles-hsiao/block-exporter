@@ -55,8 +55,7 @@ def geth_collect_metrics(last_block_number):
     except IOError, e:
         pass
 
-    if NODE_INDEX != 0:
-        geth_node_index.set(NODE_INDEX)
+    geth_node_index.set(NODE_INDEX)
 
     # Weather the nodes is listen to other nodes or not
     net_listening = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "net_listening", [])
