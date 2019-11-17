@@ -3,7 +3,8 @@ import requests
 import json
 import time
 
-CONFIG_GETH_HOST = "127.0.0.1"
+CONFIG_NODE_CONFIG_PATH = '/home/ubuntu/node_config'
+CONFIG_GETH_HOST = '127.0.0.1'
 CONFIG_GETH_PORT = 22000
 
 # Global variables
@@ -11,6 +12,7 @@ BLOCK_NUMBER = 0
 SUM_TRANSACTIONS = 0
 
 # prometheus metrics
+geth_node_index = Gauge('geth_node_index', 'Geth node index')
 geth_net_listening = Gauge('geth_net_listening', 'Is geth syncing or not')
 geth_latest_block = Gauge('geth_latest_block', 'Latest block number')
 geth_net_peer_count = Gauge('geth_net_peer_count', 'Geth peers count')
@@ -40,6 +42,21 @@ def geth_json_rpc(geth_host, geth_port, method, params):
         return(res_dict['result'])
 
 def geth_collect_metrics(last_block_number):
+    # Geth Node Index
+    NODE_INDEX = 0
+    try:
+        fp = open(CONFIG_NODE_CONFIG_PATH, "r")
+        for line in iter(fp):
+            config_split = line.split('=')
+            if config_split[0] == "NODE_INDEX":
+                NODE_INDEX = config_split[1]
+                break
+        fp.close()
+    except IOError, e:
+        pass
+
+    geth_node_index.set(NODE_INDEX)
+
     # Weather the nodes is listen to other nodes or not
     net_listening = geth_json_rpc(CONFIG_GETH_HOST, CONFIG_GETH_PORT, "net_listening", [])
     if net_listening != -1:
